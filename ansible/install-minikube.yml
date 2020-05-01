@@ -319,7 +319,7 @@
         dest: /usr/local/bin
         remote_src: yes
 
-    - name: Install kubernetes on docker (kind)
+    - name: Install kubernetes in docker (kind)
       get_url:
         url: https://github.com/kubernetes-sigs/kind/releases/download/v{{ kind_version }}/kind-linux-amd64
         dest: /usr/local/bin/kind
