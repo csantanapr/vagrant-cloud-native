@@ -94,52 +94,56 @@ end
 
 ## Versions included in this release
 Based on box [${BOX_BASE}](https://app.vagrantup.com/centos/boxes/7) version ${BOX_BASE_VERSION}
-* latest updates installed at build time
-* ansible ${ANSIBLE_VERSION}
+
+Kubernetes:
+* k3s ${K3S_VERSION}
+* kind ${KIND_VERSION}
 * minikube ${MINIKUBE_VERSION}
-* docker ${DOCKER_VERSION}
-* kubectl ${KUBECTL_VERSION}
-* helm ${HELM_VERSION}
+
+Tools:
+* ab ${AB_VERSION}
+* ansible ${ANSIBLE_VERSION}
+* appsody ${APPSODY_VERSION}
+* argocd ${ARGOCD_VERSION}
 * bat ${BAT_VERSION}
+* buildah ${BUILDAH_VERSION}
+* calicoctl ${CALICOCTL_VERSION}
+* docker ${DOCKER_VERSION}
+* emacs
+* go ${GOLANG_VERSION}
+* gradle ${GRADLE_VERSION}
+* helm ${HELM_VERSION}
+* hey
+* ibmcloud ${IBMCLOUD_VERSION}
+* igc ${IBM_GARAGE_CLOUD_CLI_VERSION}
+* java ${JDK_VERSION}
+* jq ${JQ_VERSION}
+* kn ${KN_VERSION}
+* kube-ps1
+* kubectl ${KUBECTL_VERSION}
 * kubectx ${KUBECTX_VERSION}
 * kubens ${KUBENS_VERSION}
-* oc ${OC_VERSION}
-* odo ${ODO_VERSION}
-* kn ${KN_VERSION}
-* tkn ${TKN_VERSION}
-* argocd ${ARGOCD_VERSION}
-* podman ${PODMAN_VERSION}
-* buildah ${BUILDAH_VERSION}
-* skopeo ${SKOPEO_VERSION}
-* stern ${STERN_VERSION}
-* go ${GOLANG_VERSION}
-* jq ${JQ_VERSION}
-* yq ${YQ_VERSION}
-* hey
-* ab ${AB_VERSION}
+* kustomize ${KUSTOMIZE_VERSION}
+* latest updates installed at build time
+* mkisofs
+* mvn ${MAVEN_VERSION}
 * mysql ${MYSQL_VERSION}
 * node.js ${NODEJS_VERSION}
-* tmux
+* oc ${OC_VERSION}
+* odo ${ODO_VERSION}
+* podman ${PODMAN_VERSION}
 * s2i ${S2I_VERSION}
-* kind ${KIND_VERSION}
-* k3s ${K3S_VERSION}
 * screen
-* kube-ps1
-* appsody ${APPSODY_VERSION}
-* ibmcloud ${IBMCLOUD_VERSION}
 * skaffold ${SKAFFOLD_VERSION}
+* skopeo ${SKOPEO_VERSION}
+* solsa ${IBM_SOLSA_VERSION}
+* stern ${STERN_VERSION}
 * terraform ${TERRAFORM_VERSION}
 * terraform ibmcloud ${TERRAFORM_IBMCLOUD_VERSION}
-* calicoctl ${CALICOCTL_VERSION}
-* igc ${IBM_GARAGE_CLOUD_CLI_VERSION}
-* solsa ${IBM_SOLSA_VERSION}
-* kustomize ${KUSTOMIZE_VERSION}
-* emacs
+* tkn ${TKN_VERSION}
+* tmux
 * tree
-* mkisofs
-* java ${JDK_VERSION}
-* mvn ${MAVEN_VERSION}
-* gradle ${GRADLE_VERSION}
+* yq ${YQ_VERSION}
 
 ---
 

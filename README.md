@@ -60,58 +60,61 @@ vagrant up
 
 The box resulting is based on the centos/7 box. 
 I try to keep the builds up to date with the latest version of this box. 
-Several tools are included in the box:
-* ansible
-* minikube
-* docker
-* kubectl
-* helm
-* git
-* htop
-* bat
-* kubectx
-* kubens
-* oc
-* odo
-* kn
-* tkn
-* argocd
-* podman
-* buildah
-* skopeo
-* httpie
-* nano
-* stern
-* golang
-* jq
-* yq
-* hey
-* ab
-* mysql
-* node.js
-* tmux
-* s2i
-* screens
-* kube-ps1
+
+Kubernetes included:
 * k3s
 * kind
+* minikube
+
+Tools included:
+* ab
+* ansible
 * appsody
+* argocd
+* bat
+* buildah
+* calicoctl
+* docker
+* emacs
+* git
+* golang
+* gradle
+* helm
+* hey
+* htop
+* httpie
 * ibmcloud
+* igc
+* java
+* javac
+* jq
+* kn
+* kube-ps1
+* kubectl
+* kubectx
+* kubens
+* kustomize
+* mkisofs
+* mvn
+* mysql
+* nano
+* node.js
+* oc
+* odo
+* podman
+* s2i
+* screens
 * skaffold
+* skopeo
+* solsa
+* stern
 * terraform
 * terraform ibmcloud
-* zip
-* calicoctl
-* igc
-* solsa
-* kustomize
-* emacs
+* tkn
+* tmux
 * tree
-* mkisofs
-* javac
-* java
-* mvn
-* gradle
+* yq
+* zip
 
 ## Changelog
 You can find the changelog [CHANGELOG.md](CHANGELOG.md)
