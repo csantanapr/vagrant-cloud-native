@@ -1,0 +1,4 @@
+build/
+packer_cache/
+test-vagrant/
+output-vagrant/

@@ -1,0 +1,522 @@
+- hosts: all
+  become: yes
+  become_method: sudo
+  vars:
+    minikube_version: 1.9.2
+    docker_version: 19.03.8
+    kubectl_version: 1.18.2
+    helm_version: 3.2.0
+    bat_version: 0.15.0
+    kubectx_version: 0.8.0
+    oc_version: 4.3
+    odo_version: 1.1.3
+    kn_version: 0.14.0
+    tkn_version: 0.8.0
+    argocd_version: 1.5.2
+    stern_version: 1.11.0
+    golang_version: 1.14.2
+    jq_version: 1.6
+    yq_version: 3.3.0
+    nvm_version: 0.35.3
+    s2i_version: 1.3.0
+    kind_version: 0.7.0
+    k3s_version: 1.17.4+k3s1
+    appsody_version: 0.6.1
+    ibmcloud_version: 1.0.0
+    skaffold_version: 1.8.0
+    terraform_version: 0.12.24
+    terraform_ibmcloud_version: 1.5.0
+    calicoctl_version: 3.13.3
+    ibm_garage_cloud_cli_version: 0.5.3
+    solsa_version: 0.3.6
+    kustomize_version: 3.5.4
+    jdk_version: 14-openj9
+    maven_version: 3.6.3
+    gradle_autocompletion_version: 1.4.1
+    gradle_version: 6.3
+  tasks:
+    - name: install system updates
+      yum: name=* state=latest update_cache=yes
+
+    - name: Disable SELinux
+      selinux:
+        state: disabled
+
+    - name: disable swap
+      shell: /usr/sbin/swapoff -a
+
+    - name: disable swap permanently
+      lineinfile:
+        path: /etc/fstab
+        regexp: "^[^#].*swap.*$"
+        state: absent
+
+    - name: delete swapfile
+      file:
+        path: /swapfile
+        state: absent
+
+    - name: install prerequisites
+      yum:
+        name: [vim, socat, device-mapper-persistent-data, lvm2, telnet, tcpdump]
+
+    - name: install minikube rpm
+      yum:
+        name: https://github.com/kubernetes/minikube/releases/download/v{{ minikube_version }}/minikube-{{ minikube_version }}-0.x86_64.rpm
+        state: present
+
+    - name: add docker repository
+      yum_repository:
+        name: docker-ce-stable
+        description: Docker CE Stable - $basearch
+        baseurl: https://download.docker.com/linux/centos/7/$basearch/stable
+        gpgcheck: yes
+        gpgkey: https://download.docker.com/linux/centos/gpg
+
+    - name: install docker-ce
+      yum:
+        name: docker-ce-{{ docker_version }}
+
+    - name: start and enable docker service
+      service:
+        name: docker
+        enabled: yes
+        state: started
+
+    - name: Add vagrant user to docker group
+      user:
+        name: vagrant
+        groups: docker
+        append: yes
+
+    - name: set bridge-nf-call-iptables = 1
+      lineinfile:
+        path: /etc/sysctl.conf
+        line: net.bridge.bridge-nf-call-iptables = 1
+
+    - name: apply sysctl config
+      shell: sysctl -p
+
+    - name: install conntrack
+      yum:
+        name: conntrack-tools
+
+    - name: add kubernetes repository
+      yum_repository:
+        name: Kubernetes
+        description: Kubernetes
+        baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+        gpgcheck: yes
+        gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+
+    - name: install kubectl
+      yum:
+        name: kubectl-{{ kubectl_version }}
+
+    - name: enable kubectl autocompletion
+      lineinfile:
+        path: /home/vagrant/.bashrc
+        line: source <(kubectl completion bash)
+        insertafter: EOF
+
+    - name: enable k autocompletion
+      lineinfile:
+        path: /home/vagrant/.bashrc
+        line: source <(kubectl completion bash | sed s/kubectl/k/g)
+        insertafter: EOF
+
+    - name: enable kubectl alias k
+      lineinfile:
+        path: /home/vagrant/.bashrc
+        line: alias k="kubectl"
+        insertafter: EOF
+
+    - name: extract helm
+      unarchive:
+        src: https://get.helm.sh/helm-v{{ helm_version }}-linux-amd64.tar.gz
+        remote_src: yes
+        dest: /usr/local/bin
+        extra_opts:
+          - "linux-amd64/helm"
+          - "--strip-components=1"
+
+    - name: install git
+      yum:
+        name: git
+
+    - name: install htop
+      yum:
+        name: htop
+
+    - name: Install bat yaml
+      unarchive:
+        src: https://github.com/sharkdp/bat/releases/download/v{{ bat_version }}/bat-v{{ bat_version }}-x86_64-unknown-linux-musl.tar.gz
+        dest: /usr/local/bin
+        remote_src: yes
+        extra_opts: [--strip-components=1]
+
+    - name: Install kubectx and kubens
+      unarchive:
+        src: https://github.com/ahmetb/kubectx/archive/v{{ kubectx_version }}.tar.gz
+        dest: /usr/local/bin
+        remote_src: yes
+        extra_opts: [--strip-components=1]
+
+    - name: Create a symbolic link for autocomplete kubectx
+      file:
+        src: /usr/local/bin/completion/kubectx.bash
+        dest: /usr/share/bash-completion/completions/kubectx
+        state: link
+
+    - name: Create a symbolic link for autocomplete kubens
+      file:
+        src: /usr/local/bin/completion/kubens.bash
+        dest: /usr/share/bash-completion/completions/kubens
+        state: link
+
+    - name: Install Openshift Client CLI oc
+      unarchive:
+        src: https://mirror.openshift.com/pub/openshift-v4/clients/oc/{{ oc_version }}/linux/oc.tar.gz
+        dest: /usr/local/bin
+        remote_src: yes
+
+    - name: Install Openshift Do CLI odo
+      unarchive:
+        src: https://mirror.openshift.com/pub/openshift-v4/clients/odo/v{{ odo_version }}/odo-linux-amd64.tar.gz
+        dest: /usr/local/bin
+        remote_src: yes
+
+    - name: Install Knative kn CLI
+      get_url:
+        url: https://github.com/knative/client/releases/download/v{{ kn_version }}/kn-linux-amd64
+        dest: /usr/local/bin/kn
+        mode: 0755
+
+    - name: Install Tekton tkn cli from rpm
+      yum:
+        name: https://github.com/tektoncd/cli/releases/download/v{{ tkn_version }}/tektoncd-cli-{{ tkn_version }}_Linux-64bit.rpm
+        state: present
+
+    - name: Install Argocd CLI
+      get_url:
+        url: https://github.com/argoproj/argo-cd/releases/download/v{{ argocd_version }}/argocd-linux-amd64
+        dest: /usr/local/bin/argocd
+        mode: 0755
+
+    - name: Install podman
+      yum:
+        name: podman
+
+    - name: Enable sudo podman alias podman
+      lineinfile:
+        path: /home/vagrant/.bashrc
+        line: alias podman="sudo podman"
+        insertafter: EOF
+
+    - name: Install buildah
+      yum:
+        name: buildah
+
+    - name: Enable sudo buildah alias buildah
+      lineinfile:
+        path: /home/vagrant/.bashrc
+        line: alias buildah="sudo buildah"
+        insertafter: EOF
+
+    - name: Install skopeo
+      yum:
+        name: skopeo
+
+    - name: Enable sudo skopeo alias skopeo
+      lineinfile:
+        path: /home/vagrant/.bashrc
+        line: alias skopeo="sudo skopeo"
+        insertafter: EOF
+
+    - name: Install httpie
+      yum:
+        name: httpie
+
+    - name: Install nano editor
+      yum:
+        name: nano
+
+    - name: Install Stern CLI
+      get_url:
+        url: https://github.com/wercker/stern/releases/download/{{ stern_version }}/stern_linux_amd64
+        dest: /usr/local/bin/stern
+        mode: 0755
+
+    - name: Install golang
+      unarchive:
+        src: https://dl.google.com/go/go{{ golang_version }}.linux-amd64.tar.gz
+        dest: /usr/local
+        remote_src: yes
+
+    - name: Add go to PATH
+      lineinfile:
+        path: /home/vagrant/.bashrc
+        line: export PATH=$PATH:/usr/local/go/bin
+        insertafter: EOF
+
+    - name: Install jq CLI
+      get_url:
+        url: https://github.com/stedolan/jq/releases/download/jq-{{ jq_version }}/jq-linux64
+        dest: /usr/local/bin/jq
+        mode: 0755
+
+    - name: Install yq CLI
+      get_url:
+        url: https://github.com/mikefarah/yq/releases/download/{{ yq_version }}/yq_linux_amd64
+        dest: /usr/local/bin/yq
+        mode: 0755
+
+    - name: Install hey CLI
+      get_url:
+        url: https://storage.googleapis.com/hey-release/hey_linux_amd64
+        dest: /usr/local/bin/hey
+        mode: 0755
+
+    - name: Download nvm
+      get_url:
+        url: https://raw.githubusercontent.com/nvm-sh/nvm/v{{ nvm_version }}/install.sh
+        dest: /tmp/nvm_install.sh
+        mode: 0755
+
+    - name: Install nvm and nodejs 12
+      shell: |
+        bash /tmp/nvm_install.sh
+        export NVM_DIR="$HOME/.nvm"
+        source "$NVM_DIR/nvm.sh"
+        nvm install 12
+      become: yes
+      become_user: vagrant
+
+    - name: Configure nvm PATH
+      blockinfile:
+        path: /home/vagrant/.bashrc
+        block: |
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+          [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+        insertafter: EOF
+
+    - name: Install Apache Bench ab
+      yum:
+        name: httpd-tools
+
+    - name: Install Mysql client
+      yum:
+        name: mysql
+
+    - name: Install tmux
+      yum:
+        name: tmux
+
+    - name: Install s2i
+      unarchive:
+        src: https://github.com/openshift/source-to-image/releases/download/v{{ s2i_version }}/source-to-image-v{{ s2i_version }}-eed2850f-linux-amd64.tar.gz
+        dest: /usr/local/bin
+        remote_src: yes
+
+    - name: Install kubernetes on docker (kind)
+      get_url:
+        url: https://github.com/kubernetes-sigs/kind/releases/download/v{{ kind_version }}/kind-linux-amd64
+        dest: /usr/local/bin/kind
+        mode: 0755
+
+    - name: Install screen
+      yum:
+        name: screen
+
+    - name: install k3s selinux
+      yum:
+        name: https://rpm.rancher.io/k3s-selinux-0.1.1-rc1.el7.noarch.rpm
+        state: present
+
+    - name: Install k3s
+      shell: curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION=v{{ k3s_version }} sh -
+
+    - name: Give read access to /etc/rancher/k3s/k3s.yaml
+      file:
+        path: /etc/rancher/k3s/k3s.yaml
+        state: file
+        mode: +rw
+
+    - name: Configure bashrc kubernetes
+      blockinfile:
+        path: /home/vagrant/.bashrc
+        block: |
+          echo You have 3 options to run kubernetes:
+          echo 1. kind:      kind create cluster
+          echo 2. minikube:  minikube start --driver=docker
+          echo 3. k3s:       mkdir -p /home/vagrant/.kube\; cp /etc/rancher/k3s/k3s.yaml /home/vagrant/.kube/config
+          source /home/vagrant/.kube-ps1.sh
+          PS1='[\u@\h \W $(kube_ps1)]\$ '
+        insertafter: EOF
+
+    - name: Download kube-ps1
+      get_url:
+        url: https://raw.githubusercontent.com/jonmosco/kube-ps1/master/kube-ps1.sh
+        dest: /home/vagrant/.kube-ps1.sh
+        mode: 0755
+
+    - name: install k3s selinux
+      yum:
+        name: https://github.com/appsody/appsody/releases/download/{{ appsody_version }}/appsody-{{ appsody_version }}-1.x86_64.rpm
+        state: present
+
+    - name: Install ibmcloud cli
+      unarchive:
+        src: https://public.dhe.ibm.com/cloud/bluemix/cli/bluemix-cli/{{ ibmcloud_version }}/binaries/IBM_Cloud_CLI_{{ ibmcloud_version }}_linux_amd64.tgz
+        dest: /opt
+        remote_src: yes
+
+    - name: Create a symbolic link for ibmcloud
+      file:
+        src: /opt/IBM_Cloud_CLI/ibmcloud
+        dest: /usr/local/bin/ibmcloud
+        state: link
+
+    - name: Create a symbolic link for ibmcloud-analytics
+      file:
+        src: /opt/IBM_Cloud_CLI/ibmcloud-analytics
+        dest: /usr/local/bin/ibmcloud-analytics
+        state: link
+
+    - name: Setup autocomplete for ibmcloud
+      file:
+        src: /opt/IBM_Cloud_CLI/autocomplete/bash_autocomplete
+        dest: /usr/share/bash-completion/completions/ibmcloud
+        state: link
+
+    - name: Download skaffold
+      get_url:
+        url: https://storage.googleapis.com/skaffold/releases/v{{ skaffold_version }}/skaffold-linux-amd64
+        dest: /usr/local/bin/skaffold
+        mode: 0755
+
+    - name: Install zip
+      yum:
+        name: [zip, unzip]
+
+    - name: Install terraform
+      unarchive:
+        src: https://releases.hashicorp.com/terraform/{{ terraform_version }}/terraform_{{ terraform_version }}_linux_amd64.zip
+        dest: /usr/local/bin
+        remote_src: yes
+
+    - name: Create a directory /home/vagrant/.terraform.d/plugins
+      file:
+        path: /home/vagrant/.terraform.d/plugins
+        state: directory
+        mode: 0755
+
+    - name: Install terraform ibm modules
+      unarchive:
+        src: https://github.com/IBM-Cloud/terraform-provider-ibm/releases/download/v{{ terraform_ibmcloud_version }}/linux_amd64.zip
+        dest: /home/vagrant/.terraform.d/plugins
+        remote_src: yes
+
+    - name: Make executable .terraform.d/plugins
+      file:
+        path: /home/vagrant/.terraform.d/plugins
+        state: directory
+        recurse: yes
+        mode: +rwx
+
+    - name: Download calicoctl
+      get_url:
+        url: https://github.com/projectcalico/calicoctl/releases/download/v{{ calicoctl_version }}/calicoctl-linux-amd64
+        dest: /usr/local/bin/calicoctl
+        mode: 0755
+
+    - name: Install ibm-garage-cloud-cli and ibm solsa
+      shell: |
+        set -e
+        export NVM_DIR="$HOME/.nvm"
+        source "$NVM_DIR/nvm.sh"
+        npm i -g yo
+        npm i -g @ibmgaragecloud/cloud-native-toolkit-cli@{{ ibm_garage_cloud_cli_version }}
+        npm i -g solsa@{{ solsa_version }}
+      become: yes
+      become_user: vagrant
+
+    - name: Install kustomize
+      unarchive:
+        src: https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv{{ kustomize_version }}/kustomize_v{{ kustomize_version }}_linux_amd64.tar.gz
+        dest: /usr/local/bin
+        remote_src: yes
+
+    - name: Add adoptOpenJDK yum repository
+      yum_repository:
+        name: AdoptOpenJDK
+        description: AdoptOpenJDK - $basearch
+        baseurl: http://adoptopenjdk.jfrog.io/adoptopenjdk/rpm/centos/$releasever/$basearch
+        gpgcheck: yes
+        gpgkey: https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public
+
+    - name: Install java
+      yum:
+        name: adoptopenjdk-{{ jdk_version }}
+
+    - name: Create a directory /opt/maven
+      file:
+        path: /opt/maven
+        state: directory
+        mode: 0755
+
+    - name: Download maven
+      unarchive:
+        src: https://apache.cs.utah.edu/maven/maven-3/{{ maven_version }}/binaries/apache-maven-{{ maven_version }}-bin.tar.gz
+        dest: /opt/maven
+        remote_src: yes
+        extra_opts: [--strip-components=1]
+
+    - name: Add maven to PATH
+      lineinfile:
+        path: /home/vagrant/.bashrc
+        line: export PATH=$PATH:/opt/maven/bin
+        insertafter: EOF
+
+    - name: Install emacs
+      yum:
+        name: emacs
+
+    - name: Install tree
+      yum:
+        name: tree
+
+    - name: Create a directory /opt/gradle
+      file:
+        path: /opt/gradle
+        state: directory
+        mode: 0755
+
+    - name: Download gradle
+      unarchive:
+        src: https://services.gradle.org/distributions/gradle-{{ gradle_version }}-bin.zip
+        dest: /opt
+        remote_src: yes
+
+    - name: Add gradle to PATH
+      lineinfile:
+        path: /home/vagrant/.bashrc
+        line: export PATH=$PATH:/opt/gradle-6.3/bin
+        insertafter: EOF
+
+    - name: Download gradle autocompletion
+      get_url:
+        url: https://raw.githubusercontent.com/gradle/gradle-completion/v{{ gradle_autocompletion_version }}/gradle-completion.bash
+        dest: /usr/share/bash-completion/completions/gradle
+        mode: 0755
+
+    - name: Install genisoimage
+      yum:
+        name: genisoimage
+
+    - name: Fix permissions for /usr/local/bin
+      file:
+        path: /usr/local/bin
+        state: directory
+        mode: 0755
