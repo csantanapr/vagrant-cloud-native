@@ -64,7 +64,11 @@ export BOX_VERSION=${BOX_VERSION_BASE}-$(date +'%Y%m%d')
 commit=$(git --no-pager log -n 1 --format="%H")
 export BOX_VERSION_DESCRIPTION="
 ## Description
-This box is based on the ${BOX_BASE} box version ${BOX_BASE_VERSION}. I try to keep the builds up to date with the latest version of this box.
+This box is based on the ${BOX_BASE} box version ${BOX_BASE_VERSION}.
+
+This project contains everything needed to build the cloud-native vagrant box.
+
+It is pre-configured with 3 lightweight kubernetes distributions for local development [minikube](https://minikube.sigs.k8s.io/docs), [kind](https://kind.sigs.k8s.io), and [k3s](https://github.com/rancher/k3s) .
 
 The box defaults to 2 CPU and 2GB of RAM
 
@@ -72,7 +76,7 @@ To disable the default Vagrant synced folder (\`/vagrant\`), you need to add the
 following snippet to your \`Vagrantfile\`:
 
 \`\`\`ruby
-config.vm.synced_folder ".", "/vagrant", disabled: true
+config.vm.synced_folder \".\", \"/vagrant\", disabled: true
 \`\`\`
 
 Use the following default Vagrantfile:
