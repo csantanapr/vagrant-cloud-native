@@ -71,12 +71,16 @@ Tools included:
 * ansible
 * appsody
 * argocd
+* aws
+* az
 * bat
 * buildah
 * calicoctl
 * docker
 * emacs
+* gcloud
 * git
+* gh
 * golang
 * gradle
 * helm
@@ -110,6 +114,7 @@ Tools included:
 * stern
 * terraform
 * terraform ibmcloud
+* tig
 * tkn
 * tmux
 * tree

@@ -34,6 +34,7 @@
     maven_version: 3.6.3
     gradle_autocompletion_version: 1.4.1
     gradle_version: 6.3
+    github_cli_version: 0.7.0
   tasks:
     - name: install system updates
       yum: name=* state=latest update_cache=yes
@@ -329,7 +330,7 @@
       yum:
         name: screen
 
-    - name: install k3s selinux
+    - name: Install k3s selinux
       yum:
         name: https://rpm.rancher.io/k3s-selinux-0.1.1-rc1.el7.noarch.rpm
         state: present
@@ -341,7 +342,7 @@
       file:
         path: /etc/rancher/k3s/k3s.yaml
         state: file
-        mode: +rw
+        mode: u+rw,g+wx,o+rwx
 
     - name: Configure bashrc kubernetes
       blockinfile:
@@ -361,7 +362,7 @@
         dest: /home/vagrant/.kube-ps1.sh
         mode: 0755
 
-    - name: install k3s selinux
+    - name: Install appsody
       yum:
         name: https://github.com/appsody/appsody/releases/download/{{ appsody_version }}/appsody-{{ appsody_version }}-1.x86_64.rpm
         state: present
@@ -389,6 +390,22 @@
         src: /opt/IBM_Cloud_CLI/autocomplete/bash_autocomplete
         dest: /usr/share/bash-completion/completions/ibmcloud
         state: link
+
+    - name: Install ibmcloud plugins
+      shell: |
+        set -e
+        /opt/IBM_Cloud_CLI/ibmcloud plugin install container-registry
+        /opt/IBM_Cloud_CLI/ibmcloud plugin install kubernetes-service
+        /opt/IBM_Cloud_CLI/ibmcloud plugin install functions
+        /opt/IBM_Cloud_CLI/ibmcloud plugin install cloud-databases
+        /opt/IBM_Cloud_CLI/ibmcloud plugin install cloud-object-storage
+        /opt/IBM_Cloud_CLI/ibmcloud plugin install event-streams
+        /opt/IBM_Cloud_CLI/ibmcloud plugin install vpc-infrastructure
+        /opt/IBM_Cloud_CLI/ibmcloud plugin install schematics
+        /opt/IBM_Cloud_CLI/ibmcloud plugin install watson
+        exit 0
+      become: yes
+      become_user: vagrant
 
     - name: Download skaffold
       get_url:
@@ -468,7 +485,7 @@
 
     - name: Download maven
       unarchive:
-        src: https://apache.cs.utah.edu/maven/maven-3/{{ maven_version }}/binaries/apache-maven-{{ maven_version }}-bin.tar.gz
+        src: https://mirrors.ocf.berkeley.edu/apache/maven/maven-3/{{ maven_version }}/binaries/apache-maven-{{ maven_version }}-bin.tar.gz
         dest: /opt/maven
         remote_src: yes
         extra_opts: [--strip-components=1]
@@ -514,6 +531,75 @@
     - name: Install genisoimage
       yum:
         name: genisoimage
+
+    - name: Download aws cli
+      unarchive:
+        src: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
+        dest: /opt
+        remote_src: yes
+
+    - name: Install aws cli
+      shell: /opt/aws/install
+
+    - name: Add aws completion
+      lineinfile:
+        path: /home/vagrant/.bashrc
+        line: complete -C '/usr/local/bin/aws_completer' aws
+        insertafter: EOF
+
+    - name: Add Google Cloud SDK yum repo
+      blockinfile:
+        path: /etc/yum.repos.d/google-cloud-sdk.repo
+        block: |
+          [google-cloud-sdk]
+          name=Google Cloud SDK
+          baseurl=https://packages.cloud.google.com/yum/repos/cloud-sdk-el7-x86_64
+          enabled=1
+          gpgcheck=1
+          repo_gpgcheck=1
+          gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg
+                 https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+        insertafter: EOF
+        create: yes
+
+    - name: Install gcloud cli via yum
+      yum:
+        name: google-cloud-sdk
+
+    - name: Install python3
+      yum:
+        name: python3
+
+    - name: Add Azure CLI yum repo
+      blockinfile:
+        path: /etc/yum.repos.d/azure-sdk.repo
+        block: |
+          [azure-sdk]
+          name=Azure SDK
+          baseurl=https://packages.microsoft.com/yumrepos/azure-cli
+          enabled=1
+          gpgcheck=1
+          repo_gpgcheck=1
+          gpgkey=https://packages.microsoft.com/keys/microsoft.asc
+        insertafter: EOF
+        create: yes
+
+    - name: Install Azure CLI
+      yum:
+        name: azure-cli
+
+    - name: Install Github Beta CLI
+      yum:
+        name: https://github.com/cli/cli/releases/download/v{{ github_cli_version }}/gh_{{ github_cli_version }}_linux_amd64.rpm
+        state: present
+
+    - name: Install git-extras
+      yum:
+        name: git-extras
+
+    - name: Install tig
+      yum:
+        name: git-extras
 
     - name: Fix permissions for /usr/local/bin
       file:

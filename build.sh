@@ -44,6 +44,7 @@ export KUSTOMIZE_VERSION=3.5.4
 export JDK_VERSION=14-openj9
 export MAVEN_VERSION=3.6.3
 export GRADLE_VERSION=6.3
+export GITHUB_CLI_VERSION=0.7.0
 
 
 
@@ -114,6 +115,7 @@ Tools:
 * calicoctl ${CALICOCTL_VERSION}
 * docker ${DOCKER_VERSION}
 * emacs
+* gh ${GITHUB_CLI_VERSION}
 * go ${GOLANG_VERSION}
 * gradle ${GRADLE_VERSION}
 * helm ${HELM_VERSION}
@@ -144,6 +146,7 @@ Tools:
 * stern ${STERN_VERSION}
 * terraform ${TERRAFORM_VERSION}
 * terraform ibmcloud ${TERRAFORM_IBMCLOUD_VERSION}
+* tig
 * tkn ${TKN_VERSION}
 * tmux
 * tree
