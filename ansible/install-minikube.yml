@@ -588,7 +588,7 @@
       yum:
         name: azure-cli
 
-    - name: Install Github Beta CLI
+    - name: Install Github Beta CLI gh
       yum:
         name: https://github.com/cli/cli/releases/download/v{{ github_cli_version }}/gh_{{ github_cli_version }}_linux_amd64.rpm
         state: present
@@ -599,7 +599,7 @@
 
     - name: Install tig
       yum:
-        name: git-extras
+        name: tig
 
     - name: Fix permissions for /usr/local/bin
       file:
