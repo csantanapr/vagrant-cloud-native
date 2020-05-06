@@ -106,6 +106,8 @@ Tools included:
 * oc
 * odo
 * podman
+* python
+* python3
 * s2i
 * screens
 * skaffold
