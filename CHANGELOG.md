@@ -1,6 +1,6 @@
 ## Changelog
 
-### 1.2.0-20200506
+### 1.1.0-20200506
 * Add cloudctl
 * Add arkade
 * Add inlets
@@ -10,7 +10,7 @@
 * Add psql
 * Add mongo
 
-### 1.1.0-20200505
+### 1.0.0-20200505
 * Add ibmcloud plugins
 * Fix k3s file permissions
 * Add aws cli
