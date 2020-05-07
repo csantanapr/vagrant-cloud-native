@@ -71,11 +71,13 @@ Tools included:
 * ansible
 * appsody
 * argocd
+* arkade
 * aws
 * az
 * bat
 * buildah
 * calicoctl
+* cloudctl
 * docker
 * emacs
 * gcloud
@@ -88,7 +90,10 @@ Tools included:
 * htop
 * httpie
 * ibmcloud
+* ibmcloud plugins (cdb, cfee, cos, cr, dev, es, functions, iam, is, ks, oc, resource, schematics, sl, terraform, watson)
 * igc
+* inlets
+* inletsctl
 * java
 * javac
 * jq
@@ -99,6 +104,7 @@ Tools included:
 * kubens
 * kustomize
 * mkisofs
+* mongo
 * mvn
 * mysql
 * nano
@@ -106,9 +112,11 @@ Tools included:
 * oc
 * odo
 * podman
+* psql
 * python
 * python3
 * s2i
+* s3cmd
 * screens
 * skaffold
 * skopeo
@@ -120,6 +128,7 @@ Tools included:
 * tkn
 * tmux
 * tree
+* vegeta
 * yq
 * zip
 

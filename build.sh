@@ -45,6 +45,12 @@ export JDK_VERSION=14-openj9
 export MAVEN_VERSION=3.6.3
 export GRADLE_VERSION=6.3
 export GITHUB_CLI_VERSION=0.7.0
+export CLOUDCTL_VERSION=3.3.0
+export ARKADE_VERSION=0.3.2
+export INLETS_VERSION=2.7.0
+export INLETSCTL_VERSION=0.5.2
+export VEGETA_VERSION=12.8.3
+export MONGODB_VERSION=4.2
 
 
 
@@ -110,9 +116,11 @@ Tools:
 * ansible ${ANSIBLE_VERSION}
 * appsody ${APPSODY_VERSION}
 * argocd ${ARGOCD_VERSION}
+* arkade ${ARKADE_VERSION}
 * bat ${BAT_VERSION}
 * buildah ${BUILDAH_VERSION}
 * calicoctl ${CALICOCTL_VERSION}
+* cloudctl ${CLOUDCTL_VERSION}
 * docker ${DOCKER_VERSION}
 * emacs
 * gh ${GITHUB_CLI_VERSION}
@@ -121,7 +129,10 @@ Tools:
 * helm ${HELM_VERSION}
 * hey
 * ibmcloud ${IBMCLOUD_VERSION}
+* ibmcloud plugins (cdb, cfee, cos, cr, dev, es, functions, iam, is, ks, oc, resource, schematics, sl, terraform, watson)
 * igc ${IBM_GARAGE_CLOUD_CLI_VERSION}
+* inlets ${INLETS_VERSION}
+* inletsctl ${INLETSCTL_VERSION}
 * java ${JDK_VERSION}
 * jq ${JQ_VERSION}
 * kn ${KN_VERSION}
@@ -132,13 +143,18 @@ Tools:
 * kustomize ${KUSTOMIZE_VERSION}
 * latest updates installed at build time
 * mkisofs
+* mongo ${MONGODB_VERSION}
 * mvn ${MAVEN_VERSION}
 * mysql ${MYSQL_VERSION}
 * node.js ${NODEJS_VERSION}
 * oc ${OC_VERSION}
 * odo ${ODO_VERSION}
 * podman ${PODMAN_VERSION}
+* psql
+* python
+* python3
 * s2i ${S2I_VERSION}
+* s3cmd
 * screen
 * skaffold ${SKAFFOLD_VERSION}
 * skopeo ${SKOPEO_VERSION}
@@ -150,7 +166,10 @@ Tools:
 * tkn ${TKN_VERSION}
 * tmux
 * tree
+* vegeta ${VEGETA_VERSION}
 * yq ${YQ_VERSION}
+* unzip
+* zip
 
 ---
 

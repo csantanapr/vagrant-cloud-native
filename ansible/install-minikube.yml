@@ -35,6 +35,12 @@
     gradle_autocompletion_version: 1.4.1
     gradle_version: 6.3
     github_cli_version: 0.7.0
+    cloudctl_version: 3.3.0
+    arkade_version: 0.3.2
+    inlets_version: 2.7.0
+    inletsctl_version: 0.5.2
+    vegeta_version: 12.8.3
+    mongodb_version: 4.2
   tasks:
     - name: install system updates
       yum: name=* state=latest update_cache=yes
@@ -131,6 +137,14 @@
         path: /home/vagrant/.bashrc
         line: alias k="kubectl"
         insertafter: EOF
+
+    - name: Create a directory /home/vagrant/.kube
+      file:
+        path: /home/vagrant/.kube
+        state: directory
+        owner: vagrant
+        group: vagrant
+        mode: "0755"
 
     - name: extract helm
       unarchive:
@@ -342,7 +356,9 @@
       file:
         path: /etc/rancher/k3s/k3s.yaml
         state: file
-        mode: u+rw,g+wx,o+rwx
+        owner: vagrant
+        group: vagrant
+        mode: "0644"
 
     - name: Configure bashrc kubernetes
       blockinfile:
@@ -351,7 +367,7 @@
           echo You have 3 options to run kubernetes:
           echo 1. kind:      kind create cluster
           echo 2. minikube:  minikube start --driver=docker
-          echo 3. k3s:       mkdir -p /home/vagrant/.kube\; cp /etc/rancher/k3s/k3s.yaml /home/vagrant/.kube/config
+          echo 3. k3s:       cp /etc/rancher/k3s/k3s.yaml /home/vagrant/.kube/config
           source /home/vagrant/.kube-ps1.sh
           PS1='[\u@\h \W $(kube_ps1)]\$ '
         insertafter: EOF
@@ -360,6 +376,8 @@
       get_url:
         url: https://raw.githubusercontent.com/jonmosco/kube-ps1/master/kube-ps1.sh
         dest: /home/vagrant/.kube-ps1.sh
+        owner: vagrant
+        group: vagrant
         mode: 0755
 
     - name: Install appsody
@@ -427,6 +445,8 @@
       file:
         path: /home/vagrant/.terraform.d/plugins
         state: directory
+        owner: vagrant
+        group: vagrant
         mode: 0755
 
     - name: Install terraform ibm modules
@@ -600,6 +620,69 @@
     - name: Install tig
       yum:
         name: tig
+
+    - name: Install IBM cloudctl
+      unarchive:
+        src: https://github.com/IBM/cloud-pak-cli/releases/download/v{{ cloudctl_version }}/cloudctl-linux-amd64.tar.gz
+        dest: /opt
+        remote_src: yes
+
+    - name: Create a symbolic link for IBM cloudctl
+      file:
+        src: /opt/cloudctl-linux-amd64
+        dest: /usr/local/bin/cloudctl
+        state: link
+
+    - name: Install arkade
+      get_url:
+        url: https://github.com/alexellis/arkade/releases/download/{{ arkade_version }}/arkade
+        dest: /usr/local/bin/arkade
+        mode: 0755
+
+    - name: Install inlets
+      get_url:
+        url: https://github.com/inlets/inlets/releases/download/{{ inlets_version }}/inlets
+        dest: /usr/local/bin/inlets
+        mode: 0755
+
+    - name: Install inletsctl
+      unarchive:
+        src: https://github.com/inlets/inletsctl/releases/download/{{ inletsctl_version }}/inletsctl.tgz
+        dest: /usr/local
+        remote_src: yes
+
+    - name: Install vegeta
+      unarchive:
+        src: https://github.com/tsenart/vegeta/releases/download/v{{ vegeta_version }}/vegeta-{{ vegeta_version }}-linux-amd64.tar.gz
+        remote_src: yes
+        dest: /usr/local/bin
+        extra_opts:
+          - "vegeta"
+
+    - name: Install s3cmd
+      yum:
+        name: s3cmd
+
+    - name: Install postgresql
+      yum:
+        name: postgresql
+
+    - name: Add MongoDB Community Edition repo
+      blockinfile:
+        path: /etc/yum.repos.d/mongodb-org-{{ mongodb_version }}.repo
+        block: |
+          [mongodb-org-{{ mongodb_version }}]
+          name=MongoDB Repository
+          baseurl=https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/{{ mongodb_version }}/x86_64/
+          gpgcheck=1
+          enabled=1
+          gpgkey=https://www.mongodb.org/static/pgp/server-{{ mongodb_version }}.asc
+        insertafter: EOF
+        create: yes
+
+    - name: Install mongodb shell
+      yum:
+        name: mongodb-org-shell
 
     - name: Fix permissions for /usr/local/bin
       file:
