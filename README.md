@@ -55,6 +55,14 @@ To start the VM again
 vagrant up
 ```
 
+### Update VM
+
+You can create new version of the VM:
+```
+vagrant destroy -f
+vagrant box update
+vagrant up
+```
 
 ## Tools
 
