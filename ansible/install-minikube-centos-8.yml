@@ -76,17 +76,26 @@
         name: https://github.com/kubernetes/minikube/releases/download/v{{ minikube_version }}/minikube-{{ minikube_version }}-0.x86_64.rpm
         state: present
 
-    - name: add docker repository
-      yum_repository:
-        name: docker-ce-stable
-        description: Docker CE Stable - $basearch
-        baseurl: https://download.docker.com/linux/centos/7/$basearch/stable
-        gpgcheck: yes
-        gpgkey: https://download.docker.com/linux/centos/gpg
+    #   - name: add docker repository
+    #     yum_repository:
+    #       name: docker-ce-stable
+    #       description: Docker CE Stable - $basearch
+    #       baseurl: https://download.docker.com/linux/centos/7/$basearch/stable
+    #        gpgcheck: yes
+    #        gpgkey: https://download.docker.com/linux/centos/gpg
 
-    - name: install docker-ce
-      yum:
-        name: docker-ce-{{ docker_version }}
+    - name: Add docker repository centos 8
+      get_url:
+        url: https://download.docker.com/linux/centos/docker-ce.repo
+        dest: /etc/yum.repos.d/docker-ce.repo
+        mode: 0755
+
+    #    - name: install docker-ce
+    #      yum:
+    #        name: docker-ce-{{ docker_version }}
+
+    - name: install docker-ce centos 8
+      shell: yum install -y docker-ce --nobest
 
     - name: start and enable docker service
       service:
@@ -252,9 +261,16 @@
         line: alias skopeo="sudo skopeo"
         insertafter: EOF
 
-    - name: Install httpie
+    - name: Install python3 and python3-pip
       yum:
-        name: httpie
+        name: [python3, python3-pip]
+
+    #    - name: Install httpie
+    #      yum:
+    #        name: httpie
+
+    - name: Install httpie
+      shell: pip3 install --upgrade https://github.com/jakubroztocil/httpie/archive/master.tar.gz
 
     - name: Install nano editor
       yum:
@@ -347,6 +363,10 @@
     - name: Install screen
       yum:
         name: screen
+
+    - name: Install k3s yum pre-reqs
+      yum:
+        name: [container-selinux, selinux-policy-base]
 
     - name: Install k3s selinux
       yum:
@@ -577,7 +597,7 @@
         block: |
           [google-cloud-sdk]
           name=Google Cloud SDK
-          baseurl=https://packages.cloud.google.com/yum/repos/cloud-sdk-el7-x86_64
+          baseurl=https://packages.cloud.google.com/yum/repos/cloud-sdk-el8-x86_64
           enabled=1
           gpgcheck=1
           repo_gpgcheck=1
@@ -589,10 +609,6 @@
     - name: Install gcloud cli via yum
       yum:
         name: google-cloud-sdk
-
-    - name: Install python3
-      yum:
-        name: python3
 
     - name: Add Azure CLI yum repo
       blockinfile:

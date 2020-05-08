@@ -12,7 +12,8 @@ Box can be found on [Vagrant Cloud](https://app.vagrantup.com/csantanapr/boxes/c
 ### Prerequisites
 
 * Virtualbox (tested with version 6.0.20)
-* Vagrant (tested with version 2.2.7)
+* Vagrant (tested with version 2.2.9)
+* Install Vagrant plugin disksize `vagrant plugin install vagrant-disksize`
 
 ### Create VM
 
@@ -29,10 +30,11 @@ cd cloud-native
 cat <<'EOF' >Vagrantfile
 Vagrant.configure("2") do |config|
   config.vm.box = "csantanapr/cloud-native"
+  config.disksize.size = '20GB'
   config.vm.synced_folder ".", "/vagrant", disabled: true
-  config.vm.provider "virtualbox" do |vbox|
-    vbox.cpus = 2
-    vbox.memory = 2048
+  config.vm.provider "virtualbox" do |vb|
+    vb.cpus = 2
+    vb.memory = 2048
   end
 end
 EOF

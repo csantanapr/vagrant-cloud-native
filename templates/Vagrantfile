@@ -5,10 +5,9 @@ Vagrant.configure("2") do |config|
   config.vm.define "output" do |output|
       output.vm.box = "{{.BoxName}}"
   end
-  config.vm.provider "virtualbox" do |vbox|
-    vbox.cpus = 2
-    vbox.memory = 2048
+  config.vm.provider "virtualbox" do |vb|
+    vb.cpus = 2
+    vb.memory = 2048
   end
-  config.vm.synced_folder ".", "/vagrant", disabled: true
   
 end

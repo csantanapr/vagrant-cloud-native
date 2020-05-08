@@ -1,5 +1,14 @@
 ## Changelog
 
+### 1.3.0-20200507
+* Update odo (1.2.0)
+* Setup odo preference set experimental true
+* Add ko
+* Add tm
+* Add serverless
+* Add faas-cli
+* Add jmeter
+
 ### 1.2.0-20200506
 * Add cloudctl
 * Add arkade

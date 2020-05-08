@@ -30,30 +30,17 @@
       "type": "shell",
       "inline": [
         "sudo yum install -y epel-release",
-        "sudo yum install -y python-pip",
-        "sudo pip install --upgrade pip",
-        "sudo pip install ansible=={{ user `ansible_version` }}"
+        "sudo yum install -y python2-pip",
+        "sudo pip2 install --upgrade pip",
+        "sudo pip2 install ansible=={{ user `ansible_version` }}"
       ]
     },
     {
       "type": "ansible-local",
-      "playbook_file": "ansible/install-minikube.yml",
+      "playbook_file": "ansible/install-minikube-centos-8.yml",
       "extra_arguments": [
         "--extra-vars \"minikube_version={{user `minikube_version`}} docker_version={{user `docker_version`}} kubectl_version={{user `kubectl_version`}}\""
       ]
     }
-  ],
-  "post-processors": [
-    [
-      {
-        "type": "vagrant-cloud",
-        "box_tag": "{{ user `vagrant_cloud_user` }}/{{ user `vagrant_cloud_box` }}",
-        "access_token": "{{user `vagrant_cloud_token`}}",
-        "version": "{{user `box_version`}}",
-        "version_description": "{{user `box_version_description`}}",
-        "no_release": true,
-        "keep_input_artifact": false
-      }
-    ]
   ]
 }
