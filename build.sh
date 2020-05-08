@@ -204,4 +204,4 @@ echo "Building box version ${BOX_VERSION}"
 packer build -force -on-error=abort packer.json || exit 1
 
 # Tag git commit for this build
-#git tag -a "${BOX_VERSION}" -m "Version ${BOX_VERSION} built."
+git tag -a "${BOX_VERSION}" -m "Version ${BOX_VERSION} built."
