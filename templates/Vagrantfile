@@ -1,6 +1,7 @@
 Vagrant.configure("2") do |config|
   config.vm.define "source", autostart: false do |source|
       source.vm.box = "{{.SourceBox}}"
+      config.vm.hostname = "workstation"
   end
   config.vm.define "output" do |output|
       output.vm.box = "{{.BoxName}}"

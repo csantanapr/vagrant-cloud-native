@@ -1,6 +1,6 @@
 #!/bin/bash
 # Set version info
-BOX_VERSION_BASE=1.3.0
+BOX_VERSION_BASE=1.4.0
 
 # Set versions requested of main components
 export AB_VERSION=2.3
@@ -15,7 +15,6 @@ export BUILDAH_VERSION=1.9.0
 export CALICOCTL_VERSION=3.13.3
 export CLOUDCTL_VERSION=3.3.0
 export DOCKER_VERSION=19.03.8
-export FAAS_CLI_VERSION=0.12.4
 export GITHUB_CLI_VERSION=0.7.0
 export GOLANG_VERSION=1.14.2
 export GRADLE_VERSION=6.3
@@ -28,8 +27,7 @@ export INLETS_VERSION=2.7.0
 export JDK_VERSION=14-openj9
 export JMETER_VERSION=5.2.1
 export JQ_VERSION=1.6
-export K3S_VERSION=1.17.4+k3s1
-export KIND_VERSION=0.7.0
+export KIND_VERSION=0.8.1
 export KN_VERSION=0.14.0
 export KO_VERSION=0.5.0
 export KUBECTL_VERSION=1.18.2
@@ -44,6 +42,7 @@ export NODEJS_VERSION=12.16.2
 export OC_VERSION=4.3
 export ODO_VERSION=1.2.0
 export PODMAN_VERSION=1.4.4
+export POPEYE_VERSION=0.8.1
 export S2I_VERSION=1.3.0
 export SKAFFOLD_VERSION=1.8.0
 export SKOPEO_VERSION=0.1.37
@@ -79,7 +78,7 @@ This box is based on the ${BOX_BASE} box version ${BOX_BASE_VERSION}.
 
 This project contains everything needed to build the cloud-native vagrant box.
 
-It is pre-configured with 3 lightweight kubernetes distributions for local development [minikube](https://minikube.sigs.k8s.io/docs), [kind](https://kind.sigs.k8s.io), and [k3s](https://github.com/rancher/k3s) .
+It is pre-configured with 2 lightweight kubernetes distributions for local development [minikube](https://minikube.sigs.k8s.io/docs) and [kind](https://kind.sigs.k8s.io).
 
 The box defaults to 2 CPU and 2GB of RAM
 
@@ -111,7 +110,6 @@ end
 Based on box [${BOX_BASE}](https://app.vagrantup.com/centos/boxes/7) version ${BOX_BASE_VERSION}
 
 Kubernetes:
-* k3s ${K3S_VERSION}
 * kind ${KIND_VERSION}
 * minikube ${MINIKUBE_VERSION}
 
@@ -126,7 +124,6 @@ Tools:
 * calicoctl ${CALICOCTL_VERSION}
 * cloudctl ${CLOUDCTL_VERSION}
 * docker ${DOCKER_VERSION}
-* faas-cli ${FAAS_CLI_VERSION}
 * emacs
 * gh ${GITHUB_CLI_VERSION}
 * go ${GOLANG_VERSION}
@@ -158,6 +155,7 @@ Tools:
 * oc ${OC_VERSION}
 * odo ${ODO_VERSION}
 * podman ${PODMAN_VERSION}
+* popeye ${POPEYE_VERSION}
 * psql
 * python
 * python3

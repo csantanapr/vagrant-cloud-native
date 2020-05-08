@@ -1,12 +1,16 @@
 ## Changelog
 
+### 1.4.0-20200508
+* Setup odo preference once
+* Add popeye
+* Update kind 0.8.1
+
 ### 1.3.0-20200508
 * Update odo (1.2.0)
 * Setup odo preference set experimental true
 * Add ko
 * Add tm
 * Add serverless
-* Add faas-cli
 * Add jmeter
 
 ### 1.2.0-20200506
@@ -21,7 +25,6 @@
 
 ### 1.1.0-20200505
 * Add ibmcloud plugins
-* Fix k3s file permissions
 * Add aws cli
 * Add gcloud cli
 * Add azure cli

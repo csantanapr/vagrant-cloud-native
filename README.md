@@ -3,7 +3,7 @@
 ## Description
 This project contains everything needed to build the cloud-native vagrant box.
 
-It is pre-configured with 3 lightweight kubernetes distributions for local development [minikube](https://minikube.sigs.k8s.io/docs), [kind](https://kind.sigs.k8s.io), and [k3s](https://github.com/rancher/k3s) .
+It is pre-configured with 2 lightweight kubernetes distributions for local development [minikube](https://minikube.sigs.k8s.io/docs) and [kind](https://kind.sigs.k8s.io).
 
 Box can be found on [Vagrant Cloud](https://app.vagrantup.com/csantanapr/boxes/cloud-native)
 
@@ -70,7 +70,6 @@ The box resulting is based on the centos/7 box.
 I try to keep the builds up to date with the latest version of this box. 
 
 Kubernetes included:
-* k3s
 * kind
 * minikube
 
@@ -88,7 +87,6 @@ Tools included:
 * cloudctl
 * docker
 * emacs
-* faas-cli
 * gcloud
 * git
 * gh
@@ -123,6 +121,7 @@ Tools included:
 * oc
 * odo
 * podman
+* popeye
 * psql
 * python
 * python3
