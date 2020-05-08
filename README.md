@@ -12,7 +12,7 @@ Box can be found on [Vagrant Cloud](https://app.vagrantup.com/csantanapr/boxes/c
 ### Prerequisites
 
 * Virtualbox (tested with version 6.0.20)
-* Vagrant (tested with version 2.2.7)
+* Vagrant (tested with version 2.2.9)
 
 ### Create VM
 
@@ -30,9 +30,9 @@ cat <<'EOF' >Vagrantfile
 Vagrant.configure("2") do |config|
   config.vm.box = "csantanapr/cloud-native"
   config.vm.synced_folder ".", "/vagrant", disabled: true
-  config.vm.provider "virtualbox" do |vbox|
-    vbox.cpus = 2
-    vbox.memory = 2048
+  config.vm.provider "virtualbox" do |vb|
+    vb.cpus = 2
+    vb.memory = 2048
   end
 end
 EOF
@@ -88,6 +88,7 @@ Tools included:
 * cloudctl
 * docker
 * emacs
+* faas-cli
 * gcloud
 * git
 * gh
@@ -104,8 +105,10 @@ Tools included:
 * inletsctl
 * java
 * javac
+* jmeter
 * jq
 * kn
+* ko
 * kube-ps1
 * kubectl
 * kubectx
@@ -125,6 +128,7 @@ Tools included:
 * python3
 * s2i
 * s3cmd
+* serverless
 * screens
 * skaffold
 * skopeo
@@ -134,6 +138,7 @@ Tools included:
 * terraform ibmcloud
 * tig
 * tkn
+* tm
 * tmux
 * tree
 * vegeta

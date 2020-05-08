@@ -30,3 +30,20 @@ What is your Vagrant Cloud token?
 8. Profit!
 
 If the box build succeeded, the script will automatically create a tag in your local git repository. If you are happy with the results, push to GitHub.
+
+For debugging and to avoid to push the box, remove the following section from `packer.json`
+```json
+,
+  "post-processors": [
+    [
+      {
+        "type": "vagrant-cloud",
+        "box_tag": "{{ user `vagrant_cloud_user` }}/{{ user `vagrant_cloud_box` }}",
+        "access_token": "{{user `vagrant_cloud_token`}}",
+        "version": "{{user `box_version`}}",
+        "version_description": "{{user `box_version_description`}}",
+        "no_release": true,
+        "keep_input_artifact": false
+      }
+    ]
+```
