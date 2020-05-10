@@ -1,6 +1,20 @@
 #!/bin/bash
 # Set version info
-BOX_VERSION_BASE=1.4.0
+BOX_VERSION_BASE=2.0.0
+
+#export BOX_BASE="centos/7"
+export BOX_BASE="generic/centos8"
+
+if [[ $BOX_BASE == "generic/centos8" ]]
+then
+    export BOX_ANSIBLE_PLAYBOOK="ansible/install-cloud-native-centos8.yml"
+elif [[ $CENTOS_MAJOR_VERSION == "centos/7" ]]
+then
+    export BOX_ANSIBLE_PLAYBOOK="ansible/install-cloud-native-centos7.yml"
+else
+echo "Not a valid box base"
+exit 1
+fi
 
 # Set versions requested of main components
 export AB_VERSION=2.3
@@ -9,7 +23,6 @@ export APPSODY_VERSION=0.6.1
 export ARGOCD_VERSION=1.5.2
 export ARKADE_VERSION=0.3.2
 export BAT_VERSION=0.15.0
-export BOX_BASE="centos/7"
 export BOX_BASE_VERSION=1905.1
 export BUILDAH_VERSION=1.9.0
 export CALICOCTL_VERSION=3.13.3
@@ -33,6 +46,7 @@ export KO_VERSION=0.5.0
 export KUBECTL_VERSION=1.18.2
 export KUBECTX_VERSION=0.8.0
 export KUBENS_VERSION=0.8.0
+export KUBEFWD=1.13.1
 export KUSTOMIZE_VERSION=3.5.4
 export MAVEN_VERSION=3.6.3
 export MINIKUBE_VERSION=1.9.2
@@ -85,6 +99,8 @@ The box defaults to 2 CPU and 2GB of RAM
 To disable the default Vagrant synced folder (\`/vagrant\`), you need to add the
 following snippet to your \`Vagrantfile\`:
 
+The example `Vagrantfile` is using private network and and can be accesible form your host using IP Address \`192.168.33.10\`
+
 \`\`\`ruby
 config.vm.synced_folder \".\", \"/vagrant\", disabled: true
 \`\`\`
@@ -96,6 +112,7 @@ Vagrant.configure(\"2\") do |config|
 
   config.vm.box = \"csantanapr/cloud-native\"
   config.vm.synced_folder \".\", \"/vagrant\", disabled: true
+  config.vm.network \"private_network\", ip: \"192.168.33.10\"
   config.vm.provider \"virtualbox\" do |vb|
     vb.cpus = 2
     vb.memory = 2048
@@ -145,6 +162,7 @@ Tools:
 * kubectl ${KUBECTL_VERSION}
 * kubectx ${KUBECTX_VERSION}
 * kubens ${KUBENS_VERSION}
+* kubefwd ${KUBEFWD}
 * kustomize ${KUSTOMIZE_VERSION}
 * latest updates installed at build time
 * mkisofs

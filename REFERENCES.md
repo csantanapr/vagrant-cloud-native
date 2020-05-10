@@ -23,3 +23,7 @@ https://cloud.centos.org/centos/8/vagrant/x86_64/images/
 https://cloud.centos.org/centos/8-stream/x86_64/images/
 
 https://www.linuxtechi.com/install-kubernetes-k8s-minikube-centos-8/
+
+https://github.com/lavabit/robox 
+
+https://github.com/greg-hellings/packer-templates/

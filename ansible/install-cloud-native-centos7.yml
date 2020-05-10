@@ -21,11 +21,12 @@
     jdk_version: 14-openj9
     jmeter_version: 5.2.1
     jq_version: 1.6
-    kind_version: 0.7.0
+    kind_version: 0.8.1
     kn_version: 0.14.0
     ko_version: 0.5.0
     kubectl_version: 1.18.2
     kubectx_version: 0.8.0
+    kubefwd_version: 1.13.1
     kustomize_version: 3.5.4
     maven_version: 3.6.3
     minikube_version: 1.9.2
@@ -70,37 +71,28 @@
       yum:
         name: [vim, socat, device-mapper-persistent-data, lvm2, telnet, tcpdump]
 
-    - name: install minikube rpm
+    - name: Add docker repository centos7
+      yum_repository:
+        name: docker-ce-stable
+        description: Docker CE Stable - $basearch
+        baseurl: https://download.docker.com/linux/centos/7/$basearch/stable
+        gpgcheck: yes
+        gpgkey: https://download.docker.com/linux/centos/gpg
+
+    - name: install docker-ce
       yum:
-        name: https://github.com/kubernetes/minikube/releases/download/v{{ minikube_version }}/minikube-{{ minikube_version }}-0.x86_64.rpm
-        state: present
-
-    #   - name: add docker repository
-    #     yum_repository:
-    #       name: docker-ce-stable
-    #       description: Docker CE Stable - $basearch
-    #       baseurl: https://download.docker.com/linux/centos/7/$basearch/stable
-    #        gpgcheck: yes
-    #        gpgkey: https://download.docker.com/linux/centos/gpg
-
-    - name: Add docker repository centos 8
-      get_url:
-        url: https://download.docker.com/linux/centos/docker-ce.repo
-        dest: /etc/yum.repos.d/docker-ce.repo
-        mode: 0755
-
-    #    - name: install docker-ce
-    #      yum:
-    #        name: docker-ce-{{ docker_version }}
-
-    - name: install docker-ce centos 8
-      shell: yum install -y docker-ce --nobest
+        name: docker-ce-{{ docker_version }}
 
     - name: start and enable docker service
       service:
         name: docker
         enabled: yes
         state: started
+
+    - name: Configure firewall-cmd
+      shell: |
+        firewall-cmd --zone=public --add-masquerade --permanent
+        firewall-cmd --reload
 
     - name: Add vagrant user to docker group
       user:
@@ -119,6 +111,16 @@
     - name: install conntrack
       yum:
         name: conntrack-tools
+    - name: install minikube rpm
+      yum:
+        name: https://github.com/kubernetes/minikube/releases/download/v{{ minikube_version }}/minikube-{{ minikube_version }}-0.x86_64.rpm
+        state: present
+
+    - name: Install kubernetes in docker (kind)
+      get_url:
+        url: https://github.com/kubernetes-sigs/kind/releases/download/v{{ kind_version }}/kind-linux-amd64
+        dest: /usr/local/bin/kind
+        mode: 0755
 
     - name: add kubernetes repository
       yum_repository:
@@ -132,22 +134,28 @@
       yum:
         name: kubectl-{{ kubectl_version }}
 
-    - name: enable kubectl autocompletion
-      lineinfile:
-        path: /home/vagrant/.bashrc
-        line: source <(kubectl completion bash)
-        insertafter: EOF
+    - name: Download kube-ps1
+      get_url:
+        url: https://raw.githubusercontent.com/jonmosco/kube-ps1/master/kube-ps1.sh
+        dest: /home/vagrant/.kube-ps1.sh
+        owner: vagrant
+        group: vagrant
+        mode: 0755
 
-    - name: enable k autocompletion
+    - name: Edit /etc/motd
       lineinfile:
-        path: /home/vagrant/.bashrc
-        line: source <(kubectl completion bash | sed s/kubectl/k/g)
+        path: /etc/motd
+        line: echo You have 2 options to run kubernetes
         insertafter: EOF
-
-    - name: enable kubectl alias k
+    - name: Edit /etc/motd
       lineinfile:
-        path: /home/vagrant/.bashrc
-        line: alias k="kubectl"
+        path: /etc/motd
+        line: echo 1. kind create cluster
+        insertafter: EOF
+    - name: Edit /etc/motd
+      lineinfile:
+        path: /etc/motd
+        line: echo 2. minikube start --driver=docker
         insertafter: EOF
 
     - name: Create a directory /home/vagrant/.kube
@@ -216,6 +224,7 @@
     - name: Setup odo preferences
       shell: |
         odo preference set experimental true -f
+        odo preference set updatenotification true -f
       become: yes
       become_user: vagrant
 
@@ -266,13 +275,9 @@
         line: alias skopeo="sudo skopeo"
         insertafter: EOF
 
-    - name: Install python3 and python3-pip
+    - name: Install python3
       yum:
-        name: [python3, python3-pip]
-
-    #    - name: Install httpie
-    #      yum:
-    #        name: httpie
+        name: python3
 
     - name: Install httpie
       shell: pip3 install --upgrade https://github.com/jakubroztocil/httpie/archive/master.tar.gz
@@ -332,15 +337,6 @@
       become: yes
       become_user: vagrant
 
-    - name: Configure nvm PATH
-      blockinfile:
-        path: /home/vagrant/.bashrc
-        block: |
-          export NVM_DIR="$HOME/.nvm"
-          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-          [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-        insertafter: EOF
-
     - name: Install Apache Bench ab
       yum:
         name: httpd-tools
@@ -359,34 +355,9 @@
         dest: /usr/local/bin
         remote_src: yes
 
-    - name: Install kubernetes in docker (kind)
-      get_url:
-        url: https://github.com/kubernetes-sigs/kind/releases/download/v{{ kind_version }}/kind-linux-amd64
-        dest: /usr/local/bin/kind
-        mode: 0755
-
     - name: Install screen
       yum:
         name: screen
-
-    - name: Configure bashrc kubernetes
-      blockinfile:
-        path: /home/vagrant/.bashrc
-        block: |
-          echo You have 2 options to run kubernetes:
-          echo 1. kind:      kind create cluster
-          echo 2. minikube:  minikube start --driver=docker
-          source /home/vagrant/.kube-ps1.sh
-          PS1='[\u@\h \W $(kube_ps1)]\$ '
-        insertafter: EOF
-
-    - name: Download kube-ps1
-      get_url:
-        url: https://raw.githubusercontent.com/jonmosco/kube-ps1/master/kube-ps1.sh
-        dest: /home/vagrant/.kube-ps1.sh
-        owner: vagrant
-        group: vagrant
-        mode: 0755
 
     - name: Install appsody
       yum:
@@ -587,7 +558,7 @@
         block: |
           [google-cloud-sdk]
           name=Google Cloud SDK
-          baseurl=https://packages.cloud.google.com/yum/repos/cloud-sdk-el8-x86_64
+          baseurl=https://packages.cloud.google.com/yum/repos/cloud-sdk-el7-x86_64
           enabled=1
           gpgcheck=1
           repo_gpgcheck=1
@@ -725,7 +696,7 @@
 
     - name: Install Apache jmeter
       unarchive:
-        src: https://ftp.wayne.edu/apache//jmeter/binaries/apache-jmeter-{{ jmeter_version }}.tgz
+        src: https://downloads.apache.org/jmeter/binaries/apache-jmeter-{{ jmeter_version }}.tgz
         remote_src: yes
         dest: /opt/apache-jmeter
         extra_opts:
@@ -744,6 +715,48 @@
         dest: /usr/local/bin
         extra_opts:
           - "popeye"
+
+    - name: install kubefwd
+      yum:
+        name: https://github.com/txn2/kubefwd/releases/download/{{ kubefwd_version }}/kubefwd_amd64.rpm
+        state: present
+
+    - name: Add to bashrc alias kubefwd
+      lineinfile:
+        path: /home/vagrant/.bashrc
+        line: alias kubefwd="sudo HOME=/home/vagrant  /usr/local/bin/kubefwd"
+        insertafter: EOF
+
+    - name: Add to bashrc alias k
+      lineinfile:
+        path: /home/vagrant/.bashrc
+        line: alias k="kubectl"
+        insertafter: EOF
+    - name: Add to bashrc kubectl completion
+      lineinfile:
+        path: /home/vagrant/.bashrc
+        line: source <(kubectl completion bash)
+        insertafter: EOF
+    - name: Add to bashrc k completion
+      lineinfile:
+        path: /home/vagrant/.bashrc
+        line: source <(kubectl completion bash | sed s/kubectl/k/g)
+        insertafter: EOF
+    - name: Add to bashrc .kube-ps1
+      lineinfile:
+        path: /home/vagrant/.bashrc
+        line: source /home/vagrant/.kube-ps1.sh
+        insertafter: EOF
+    - name: Add to bashrc ip address for PS1
+      lineinfile:
+        path: /home/vagrant/.bashrc
+        line: _ip_a() { echo "$(ip -br address show dev eth1 | awk '{print substr($3,1,index($3,"/")-1);}')"; }
+        insertafter: EOF
+    - name: Add to bashrc PS1
+      lineinfile:
+        path: /home/vagrant/.bashrc
+        line: PS1='[student@workstation $(_ip_a) \W $(kube_ps1)]\$ '
+        insertafter: EOF
 
     - name: Fix permissions for /usr/local/bin
       file:

@@ -1,5 +1,10 @@
 ## Changelog
 
+### 2.0.0-20200509
+* Upgrade CentOS from 7 to 8
+* Add popeye
+* Add kubefwd
+
 ### 1.4.0-20200508
 * Setup odo preference once
 * Add popeye

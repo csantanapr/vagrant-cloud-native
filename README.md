@@ -30,6 +30,7 @@ cat <<'EOF' >Vagrantfile
 Vagrant.configure("2") do |config|
   config.vm.box = "csantanapr/cloud-native"
   config.vm.synced_folder ".", "/vagrant", disabled: true
+  config.vm.network "private_network", ip: "192.168.33.10"
   config.vm.provider "virtualbox" do |vb|
     vb.cpus = 2
     vb.memory = 2048
@@ -39,6 +40,8 @@ EOF
 
 vagrant up
 ```
+
+The example `Vagrantfile` is using private network and and can be accesible form your host using IP Address `192.168.33.10`
 
 Now login into the running VM
 ```
@@ -111,6 +114,7 @@ Tools included:
 * kubectl
 * kubectx
 * kubens
+* kubefwd
 * kustomize
 * mkisofs
 * mongo
