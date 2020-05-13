@@ -66,7 +66,7 @@ vagrant up
 
 ## Tools
 
-The box resulting is based on the centos/7 box. 
+The box resulting is based on the centos/8 box. 
 I try to keep the builds up to date with the latest version of this box. 
 
 Kubernetes included:
