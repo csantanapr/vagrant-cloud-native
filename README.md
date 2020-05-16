@@ -148,6 +148,26 @@ Tools included:
 * yq
 * zip
 
+## Run lightweight VM with 512MB/256MB of memory
+
+If you plan on using this VM without the need for kube you can edit the Vagrantfile memory specification.
+```
+vb.memory = 512
+```
+
+Additionally, if you've no need for a container runtime, run with 256MB
+```
+vb.memory = 256
+```
+
+and stop docker and containerd after you ssh into the VM
+```
+sudo systemctl stop docker
+sudo systemctl stop containerd
+```
+
+
+
 ## Changelog
 You can find the changelog [CHANGELOG.md](CHANGELOG.md)
 
